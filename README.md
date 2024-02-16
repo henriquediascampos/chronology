@@ -20,13 +20,13 @@ Este projeto Node.js utiliza Webpack para gerar páginas estáticas que compõem
 1. Clone este repositório para sua máquina local:
 
 ```bash
-git clone https://github.com/seu-usuario/seu-projeto.git
+git clone https://github.com/henriquediascampos/chronology.git
 ```
 
 2. Navegue até o diretório do projeto:
 
 ```bash
-cd seu-projeto
+cd chronology
 ```
 
 3. Instale as dependências do projeto:
