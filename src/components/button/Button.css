@@ -1,0 +1,9 @@
+.button-default {
+  height: 32px;
+  padding: 0 12px;
+  width: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+}

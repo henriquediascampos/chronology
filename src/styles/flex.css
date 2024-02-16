@@ -1,0 +1,41 @@
+@layer flex {
+    .container {
+        display: flex;
+    }
+
+    .row {
+        flex-direction: row;
+    }
+
+    .column {
+        flex-direction: column;
+    }
+
+    .container.row > *:not(:last-child) {
+        margin-right: 8px;
+    }
+
+    .container.column > *:not(:last-child) {
+        margin-bottom: 8px;
+    }
+
+    .container.center {
+        justify-content: center;
+    }
+
+    .container.end {
+        justify-content: end;
+    }
+
+    .container.items-center {
+        align-items: center;
+    }
+
+    .container.between {
+        justify-content: space-between;
+    }
+
+    .flex-1 {
+        flex: 1;
+    }
+}

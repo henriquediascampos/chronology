@@ -1,0 +1,27 @@
+.p-4 {
+    padding: 4px;
+}
+
+.p-8 {
+    padding: 8px;
+}
+
+.full-w {
+    width: 100%;
+}
+
+.full-h {
+    height: 100%;
+}
+
+.no-margin {
+    margin: 0;
+}
+
+.no-margin-children > * {
+    margin: 0;
+}
+
+.no-padding {
+    padding: 0;
+}
