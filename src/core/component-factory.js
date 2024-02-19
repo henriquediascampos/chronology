@@ -1,4 +1,4 @@
-import { Button } from "../components/button/Button";
+import { Componet } from "./Component";
 
 /**
  *
@@ -29,15 +29,17 @@ export function appendChild(container, child) {
 
 /**
  *
- * @param {HTMLElement|HTMLCollection} template
+ * @param {Componet} context
  */
 export function render(context) {
-  const { template } = context;
-  const btns = Array.from(template.querySelectorAll("app-button"));
-
-  btns.forEach((element) => {
-    const appButton = Button(element, context);
-    element.parentNode.replaceChild(appButton, element);
+  const { template, componentsRef } = context;
+  console.error(componentsRef)
+  componentsRef?.forEach((component) => {
+    const customTag = Array.from(template.querySelectorAll(component.ref));
+    customTag.forEach((element) => {
+      const newComponent = new component.type(element, context);
+      element.parentNode.replaceChild(newComponent.render(), element);
+    });
   });
 
   return template;

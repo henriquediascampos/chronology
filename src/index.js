@@ -1,9 +1,8 @@
-import './styles/styles.css'
 import App from "./App.js";
-import { appendChild, render } from "./utils/component-factory.js";
+import { init } from './core/init.js';
+import './styles/styles.css';
 
-const root = document.querySelector("#root");
+
 const app = new App()
-
-appendChild(root, app.render())
+init(app.render())
 

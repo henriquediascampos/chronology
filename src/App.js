@@ -1,23 +1,30 @@
 import Template from "./App.html";
-import { initRoutes } from "./Routes";
-import { createElement, render } from "./utils/component-factory";
+import { Button } from "./components/app-button/Button";
+import { Componet } from "./core/Component";
+import { createElement } from "./core/component-factory";
 
 
-export default class App {
+export default class App extends Componet {
   
   patos = () => 'arroz'
 
   constructor() {
-    initRoutes();
-    this.template = createElement(Template);
+    const template = createElement(Template);
+    super(
+      template, 
+      [
+        {
+          ref: 'app-button',
+          type: Button
+        }
+      ],
+      true)
   }
     
   ovosmexidos() {
     console.log('teste de visibilidade do js');
   }
 
-  render() {
-    return render(this)
-  };
+
 }
 

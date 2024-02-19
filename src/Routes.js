@@ -1,4 +1,4 @@
-import { appendChild } from "./utils/component-factory.js";
+import { appendChild } from "./core/component-factory.js";
 
 /**
  * @typedef {Array.<Object>} Route
