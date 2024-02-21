@@ -2,12 +2,13 @@ import Template from "./Button.html";
 import "./Button.css";
 import { createElement } from "../../core/component-factory";
 import { Componet } from "../../core/Component";
-// import {Icon} from "../icon/Icon";
+import { Ripple } from "../ripple/Ripple";
 
 const BUTTON_PROPS = Object.freeze({
   ONCLICK: "onclick",
   START_ICON: "startIcon",
   END_ICON: "endIcon",
+  BG_COLOR: "bgColor",
 });
 
 /**
@@ -24,86 +25,106 @@ export class Button extends Componet {
     const template = createElement(Template);
     super(template, null, true);
 
-    const attributes = element.getAttributeNames();
-    const functions = Object.getOwnPropertyNames(
+    //atribuições
+    this.attributes = element.getAttributeNames();
+    this.functions = Object.getOwnPropertyNames(
       Object.getPrototypeOf(context)
     );
-    const props = Object.getOwnPropertyNames(context);
+    this.props = Object.getOwnPropertyNames(context);
+    this.context = context
+    this.element = element
 
-    this.validate(functions, props, context);
 
-    this.setOnclick(element, functions, context, props, this.template);
-    this.setOthersAttributes(attributes, element, props, context, this.template);
+    //start da logica
+    this.validate(context);
+    this.setOnclick();
+    this.setOthersAttributes();
 
     if (element.hasAttribute(BUTTON_PROPS.START_ICON)) {
-      const icon = Icon({
-        value: element.getAttribute(BUTTON_PROPS.START_ICON),
-      });
-      this.template.append(icon);
+      // const icon = Icon({
+      //   value: element.getAttribute(BUTTON_PROPS.START_ICON),
+      // });
+      // this.template.append(icon);
     }
     this.template.append(...element.childNodes);
+
+    this.handleButton()
   }
 
-  setOthersAttributes(attributes, element, props, context, template) {
-    attributes
+  setOthersAttributes() {
+    this.attributes
       .filter((attr) => !Object.values(BUTTON_PROPS).includes(attr))
       .forEach((attr) => {
-        const value = element.getAttribute(attr);
+        const value = this.element.getAttribute(attr);
+
         if (/^\{.+\}$/.test(value)) {
-          const propertyName = props.filter(
+          const propertyName = this.props.filter(
             (fn) => fn === value.substring(1, value.length - 1)
           )[0];
 
           if (propertyName) {
-            const property = context[propertyName];
+            const property = this.context[propertyName];
             if (property instanceof Function) {
-              template.setAttribute(attr, property.bind(context)());
+              this.template.setAttribute(attr, property.bind(this.context)());
             } else {
-              template.setAttribute(attr, property);
+              this.template.setAttribute(attr, property);
             }
           } else {
             throw new Error(
-              `propriedade não definida em ${context.constructor.name}`
+              `propriedade não definida em ${this.context.constructor.name}`
             );
           }
+        } else {
+          this.template.setAttribute(attr, value);
         }
       });
   }
 
-  setOnclick(element, functions, context, props, template) {
-    const onclick = element.getAttribute("onclick");
+  setOnclick() {
+    const onclick = this.element.getAttribute("onclick");
     if (onclick) {
-      const functionContext = functions
-        .filter((fn) => fn === onclick.substring(0, onclick.indexOf("(")))
-        .map((fn) => context[fn].bind(context))[0];
+      const functionContext = this.functions
+          .filter((fn) => fn === onclick.substring(0, onclick.indexOf("(")))
+          .map((fn) => this.context[fn].bind(this.context))[0];
 
-      const propsContext = props
-        .filter((fn) => fn === onclick.substring(0, onclick.indexOf("(")))
-        .map((fn) => context[fn].bind(context))
-        .filter((fn) => fn instanceof Function)[0];
+      const propsContext = this.props
+          .filter((fn) => fn === onclick.substring(0, onclick.indexOf("(")))
+          .map((fn) => this.context[fn].bind(this.context))
+          .filter((fn) => fn instanceof Function)[0];
 
       if (functionContext) {
-        template.addEventListener("click", (e) => functionContext(e));
+        this.template.addEventListener("click", (e) => functionContext(e));
       } else if (propsContext) {
-        template.addEventListener("click", (e) => propsContext(e));
+        this.template.addEventListener("click", (e) => propsContext(e));
       } else {
-        template.addEventListener("click", () =>
+        this.template.addEventListener("click", () =>
           console.log("método não implementado")
         );
       }
     }
   }
 
-  validate(functions, props, context) {
-    if (functions.some((fn) => props.includes(fn))) {
-      const duplicated = functions.filter((fn) => props.includes(fn));
+  validate(context) {
+    if (this.functions.some((fn) => this.props.includes(fn))) {
+      const duplicated = this.functions.filter((fn) => this.props.includes(fn));
       throw new Error(
         `Você não pode ter functione propriedades com mesmo nome em sua classe [${
-          context.constructor.name
+          this.context.constructor.name
         }]. \n Considere renomear a(s) funçõe(s) ou atributo(s): ${duplicated.join(
           ","
         )}`
       );
     }
   }
+
+
+  handleButton() {
+    this.template.classList.add('ripple', 'starting-position-click');
+    new Ripple(this.template)
+    const color = this.template.getAttribute('color');
+    const bgColor = this.template.getAttribute('bgcolor');
+    this.template.style.setProperty('--color-fill', color || '#000');
+    this.template.style.color = color;
+    this.template.style.backgroundColor = bgColor;
+}
 }

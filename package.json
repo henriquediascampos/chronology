@@ -4,9 +4,10 @@
   "description": "",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "start": "webpack serve --open"
+    "start": "webpack serve --open",
+    "test": "webpack serve --open --mode development --inline --hot"
+
   },
   "author": "henrique.campos",
   "license": "ISC",

@@ -2,7 +2,7 @@ import Template from "./App.html";
 import { Button } from "./components/app-button/Button";
 import { Componet } from "./core/Component";
 import { createElement } from "./core/component-factory";
-
+import './App.css';
 
 export default class App extends Componet {
   
@@ -16,7 +16,7 @@ export default class App extends Componet {
         {
           ref: 'app-button',
           type: Button
-        }
+        }       
       ],
       true)
   }

@@ -1,0 +1,63 @@
+@layer ripple {
+  .light {
+      --background-ripple: #0000001f;
+  }
+
+  .dark {
+      --background-ripple: #ffffff1f;
+  }
+
+  /* RIPPLE */
+  .ripple {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      place-content: center;
+      align-items: center;
+  }
+
+  .ripple-element {
+      overflow: hidden;
+      z-index: 2;
+      position: absolute;
+      background-color: var(--background-ripple);
+      border-radius: 50%;
+      pointer-events: none;
+      transition:
+          opacity 20ms cubic-bezier(0, 0, 0.2, 1),
+          height 0ms cubic-bezier(0, 0, 0.2, 1),
+          width 0ms cubic-bezier(0, 0, 0.2, 1);
+      width: 0px;
+      height: 0px;
+  }
+
+  .starting-position-click > .ripple-element {
+      transform: translate(-50%, -50%);
+  }
+
+  .ripple-element-on {
+      transition-duration: 250ms;
+      height: 468px;
+      width: 468px;
+  }
+
+  .ripple .ripple-element-on {
+      transition-duration: 1525ms;
+  }
+
+  .button-icon .ripple-element-on {
+      height: 40px;
+      width: 40px;
+  }
+
+  .ripple-element-off {
+      transition-duration: 250ms;
+      opacity: 0;
+  }
+
+  .ponto {
+      width: 2px;
+      height: 2px;
+      background-color: #000;
+  }
+}

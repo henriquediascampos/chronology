@@ -33,7 +33,6 @@ export function appendChild(container, child) {
  */
 export function render(context) {
   const { template, componentsRef } = context;
-  console.error(componentsRef)
   componentsRef?.forEach((component) => {
     const customTag = Array.from(template.querySelectorAll(component.ref));
     customTag.forEach((element) => {

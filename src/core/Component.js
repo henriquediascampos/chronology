@@ -1,3 +1,4 @@
+import { checkDuplicatedValue } from "../utils/Array-utils";
 import { render } from "./component-factory";
 
 export class Componet {
@@ -35,8 +36,8 @@ export class Componet {
     }
 
     if (!this.noExternalComponents && !this.componentsRef?.length) {
-      throw new Error(`Você não definiu nenhuma referencia para seu componente!!!
-          se você estiver usando componentes externos a este componente, você definir as referencias do mesmo nesta variavel 
+      throw new Error(`Você não definiu nenhuma referencia para seu componente ${this.constructor.name}!!!
+          se você estiver usando componentes externos a ${this.constructor.name}, você deve definir as referencias dos mesmos na variável componentsRef
           ex: 
             constructor() {
               this.componentsRef = [
@@ -51,7 +52,7 @@ export class Componet {
               ]
             }
           
-          se não for o caso defina a propriedade noExternalComponents pra true`
+          se não for o caso, defina a propriedade noExternalComponents para true`
       );
     }
 
@@ -59,10 +60,22 @@ export class Componet {
       throw new Error(`componentsRef deve ser uma array de ComponentRef!!!`);
     }
 
-    if (this.componentsRef?.length && this.componentsRef.some(c => !(c.type.prototype instanceof Componet))) {
-      throw new Error(`ComponentRef deve sempre ter o parametro type do tipo Component!!!`);
+    if (this.componentsRef?.length) {
+      if (this.componentsRef.some(c => !(c.type.prototype instanceof Componet))) {
+        throw new Error(
+          `ComponentRef deve sempre ter o parametro type do tipo Component!!! Cheque os componentes: ${
+            this.componentsRef
+              .filter((c) => !(c.type.prototype instanceof Componet))
+              .map(c => c.type.name)
+              .join(",")}`
+        );
+      }
+      
+      if (checkDuplicatedValue(this.componentsRef, 'ref')) {
+        throw new Error(`Voce não pode ter refências duplicadas!!! 
+          olhe seu componete ${this.constructor.name} e verifique as referências que você está passando para o construtor!`);
+      }
     }
-
   }
 
   render() {
