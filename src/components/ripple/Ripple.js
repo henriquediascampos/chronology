@@ -1,25 +1,23 @@
-import "./Ripple.css";
+import styles from "./Ripple.css";
 
 export class Ripple {
-
-  timeoutId
+  timeoutId;
 
   constructor(element) {
-
     this.elementRipple = element;
     this.addRippleEffect();
   }
 
   addRippleEffect() {
     this.elementRipple.addEventListener("mousedown", (event) => {
-      clearTimeout(this.timeoutId)
+      clearTimeout(this.timeoutId);
       this.removeRippleElementExists();
       const $target = event.currentTarget;
       const $ripple = this.createRippleElement(event, $target);
 
       $target.appendChild($ripple);
       setTimeout(() => {
-        $ripple.classList.add("ripple-element-on");
+        $ripple.classList.add(styles["ripple-element-on"]);
       }, 0);
     });
 
@@ -30,9 +28,11 @@ export class Ripple {
     });
 
     this.elementRipple.addEventListener("mouseup", () => {
-      const rippleElement = document.querySelector(".ripple-element");
+      const rippleElement = document.querySelector(
+        `.${styles["ripple-element"]}`
+      );
       if (rippleElement) {
-        rippleElement.classList.add("ripple-element-off");
+        rippleElement.classList.add(styles["ripple-element-off"]);
       }
       this.timeoutId = setTimeout(() => {
         this.removeRippleElementExists();
@@ -41,7 +41,7 @@ export class Ripple {
   }
 
   removeRippleElementExists() {
-    const rippleExists = document.querySelector(".ripple-element");
+    const rippleExists = document.querySelector(`.${styles["ripple-element"]}`);
     if (rippleExists) {
       rippleExists.remove();
     }
@@ -55,14 +55,14 @@ export class Ripple {
    */
   createRippleElement(event, currentTarget) {
     const $ripple = document.createElement("div");
-    $ripple.classList.add("ripple-element");
+    $ripple.classList.add(styles["ripple-element"]);
     const rect = currentTarget.getBoundingClientRect();
 
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
     const startingPositionRelativeToClick = currentTarget.classList.contains(
-      "starting-position-click"
+      styles["starting-position-click"]
     );
     if (startingPositionRelativeToClick) {
       $ripple.style.top = `${y}px`;

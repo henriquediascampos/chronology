@@ -1,5 +1,5 @@
 import Template from "./Button.html";
-import "./Button.css";
+import styles from "./Button.css";
 import { createElement } from "../../core/component-factory";
 import { Componet } from "../../core/Component";
 import { Ripple } from "../ripple/Ripple";
@@ -15,7 +15,6 @@ const BUTTON_PROPS = Object.freeze({
  * Cria um botão HTML.
  * @param {HTMLButtonElement} element - O icone.
  * @param {object} context - O icone.
- * @returns {HTMLButtonElement} - O botão HTML criado dinamicamente.
  * @throws {Error} - Se os parâmetros handleClick ou label forem omitidos.
  */
 export class Button extends Componet {
@@ -23,7 +22,7 @@ export class Button extends Componet {
 
   constructor(element, context) {
     const template = createElement(Template);
-    super(template, null, true);
+    super(template, styles, null, true);
 
     //atribuições
     this.attributes = element.getAttributeNames();

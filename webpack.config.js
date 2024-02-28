@@ -1,6 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
   entry: {
@@ -10,7 +11,6 @@ module.exports = {
   output: {
     filename: "[name].[contenthash].bundle.js",
     path: path.resolve(__dirname, "dist"),
-    clean: true,
   },
   devtool: "source-map",
   devServer: {
@@ -20,7 +20,23 @@ module.exports = {
     rules: [
       {
         test: /\.css$/i,
-        use: [{loader: MiniCssExtractPlugin.loader}, "css-loader"],
+        // exclude: /styles.css$/i,
+        use: [
+          { loader: MiniCssExtractPlugin.loader },
+          {
+            loader: "css-loader",
+            options: {
+              modules: {
+                mode: (file) => { 
+                  // console.log('file: ', file, file.startsWith(path.resolve(__dirname, "src/styles/")));
+                  // return 'local'
+                  return file.startsWith(path.resolve(__dirname, "src/styles/")) ? 'global' : 'local';
+                },
+                localIdentName: "[name]__[local]--[hash:base64:5]",
+              },
+            },
+          },
+        ],
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
@@ -33,18 +49,19 @@ module.exports = {
     ],
   },
   plugins: [
+    new MiniCssExtractPlugin({
+      filename: "css/style.css",
+    }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "public/index.html"),
       filename: "index.html",
     }),
-    new MiniCssExtractPlugin({
-      filename: "css/style.css"
-    })
+    new CleanWebpackPlugin(),
   ],
   optimization: {
     splitChunks: {
       chunks: "all",
-      minSize: 1
+      minSize: 1,
     },
   },
 };
