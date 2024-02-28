@@ -7,11 +7,11 @@
     "build": "webpack",
     "start": "webpack serve --open",
     "test": "webpack serve --open --mode development --inline --hot"
-
   },
   "author": "henrique.campos",
   "license": "ISC",
   "devDependencies": {
+    "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.10.0",
     "html-loader": "^5.0.0",
     "html-webpack-plugin": "^5.6.0",

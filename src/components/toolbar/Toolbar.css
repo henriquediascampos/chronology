@@ -1,0 +1,16 @@
+.main {
+    margin-left: 300px;
+    width: 250px;
+    height: 250px;
+    background-color: red;
+    color: white;
+    position: relative;
+}
+
+.ab {
+    width: 25px;
+    height: 25px;
+    background-color: rgb(111, 0, 255);
+    color: white;
+    position: absolute;
+}
