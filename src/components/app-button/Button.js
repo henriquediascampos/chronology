@@ -9,6 +9,7 @@ const BUTTON_PROPS = Object.freeze({
   START_ICON: "startIcon",
   END_ICON: "endIcon",
   BG_COLOR: "bgColor",
+  CLASS: "class",
 });
 
 /**
@@ -22,7 +23,7 @@ export class Button extends Componet {
 
   constructor(element, context) {
     const template = createElement(Template);
-    super(template, styles, null, true);
+    super(template, null, null, true);
 
     //atribuições
     this.attributes = element.getAttributeNames();
@@ -48,6 +49,8 @@ export class Button extends Componet {
     this.template.append(...element.childNodes);
 
     this.handleButton()
+    this.styles = styles;
+    this.stylesApplay(template, styles)
   }
 
   setOthersAttributes() {
@@ -118,8 +121,7 @@ export class Button extends Componet {
 
 
   handleButton() {
-    this.template.classList.add('ripple', 'starting-position-click');
-    new Ripple(this.template)
+    new Ripple(this.template, this);
     const color = this.template.getAttribute('color');
     const bgColor = this.template.getAttribute('bgcolor');
     this.template.style.setProperty('--color-fill', color || '#000');

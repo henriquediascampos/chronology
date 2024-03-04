@@ -20,19 +20,18 @@ module.exports = {
     rules: [
       {
         test: /\.css$/i,
-        // exclude: /styles.css$/i,
         use: [
-          { loader: MiniCssExtractPlugin.loader },
+          MiniCssExtractPlugin.loader,
           {
             loader: "css-loader",
             options: {
+              sourceMap: true,
               modules: {
-                mode: (file) => { 
-                  // console.log('file: ', file, file.startsWith(path.resolve(__dirname, "src/styles/")));
-                  // return 'local'
-                  return file.startsWith(path.resolve(__dirname, "src/styles/")) ? 'global' : 'local';
-                },
-                localIdentName: "[name]__[local]--[hash:base64:5]",
+                mode: (file) =>
+                  file.startsWith(path.resolve(__dirname, "src/styles/"))
+                    ? "global"
+                    : "local",
+                localIdentName: "[name]__[local]",
               },
             },
           },

@@ -1,5 +1,5 @@
 import { checkDuplicatedValue } from "../utils/Array-utils";
-import { render, stylesApplay } from "./component-factory";
+import { render } from "./component-factory";
 
 export class Componet {
   /**
@@ -80,9 +80,22 @@ export class Componet {
     }
 
     if (styles) {
-      stylesApplay(template, styles);
+      this.stylesApplay(template, styles);
     }
   }
+
+  
+stylesApplay(template, styles) {
+  Object.keys(styles).forEach(
+    function (cssClassName) {
+      const elements =
+        template.parentElement.getElementsByClassName(cssClassName);
+      Array.from(elements).forEach((element) => {
+        element.classList.replace(cssClassName, styles[cssClassName]);
+      });
+    }.bind(this)
+  );
+}
 
   render() {
     return render(this);

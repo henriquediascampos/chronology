@@ -1,15 +1,29 @@
 import styles from "./Ripple.css";
-
-export class Ripple {
+import Tamplate from "./Ripple.html";
+import { Componet } from "../../core/Component.js";
+import { createElement } from "../../core/component-factory.js";
+export class Ripple extends Componet {
   timeoutId;
 
-  constructor(element) {
-    this.elementRipple = element;
-    this.addRippleEffect();
+  /**
+   * @param {HTMLButtonElement} _ - O icone.
+   * @param {object} context - O icone.
+   */
+  constructor(_, context) {
+    const tamplate = createElement(Tamplate);
+    super(tamplate, styles, null, true);
+
+    if (context?.template) {
+      this.addRippleEffect(context.template);
+    }
   }
 
-  addRippleEffect() {
-    this.elementRipple.addEventListener("mousedown", (event) => {
+  addRippleEffect(elementRipple) {
+    elementRipple.classList.add(
+      this.styles["ripple"],
+      this.styles["starting-position-click"]
+    );
+    elementRipple.addEventListener("mousedown", (event) => {
       clearTimeout(this.timeoutId);
       this.removeRippleElementExists();
       const $target = event.currentTarget;
@@ -17,23 +31,24 @@ export class Ripple {
 
       $target.appendChild($ripple);
       setTimeout(() => {
-        $ripple.classList.add(styles["ripple-element-on"]);
+        $ripple.classList.add(this.styles["ripple-element-on"]);
       }, 0);
     });
 
-    this.elementRipple.addEventListener("mouseleave", (e) => {
+    elementRipple.addEventListener("mouseleave", (e) => {
       if (e.buttons > 0) {
         this.removeRippleElementExists();
       }
     });
 
-    this.elementRipple.addEventListener("mouseup", () => {
+    elementRipple.addEventListener("mouseup", () => {
       const rippleElement = document.querySelector(
         `.${styles["ripple-element"]}`
       );
       if (rippleElement) {
-        rippleElement.classList.add(styles["ripple-element-off"]);
+        rippleElement.classList.add(this.styles["ripple-element-off"]);
       }
+      
       this.timeoutId = setTimeout(() => {
         this.removeRippleElementExists();
       }, 1500);
@@ -41,7 +56,9 @@ export class Ripple {
   }
 
   removeRippleElementExists() {
-    const rippleExists = document.querySelector(`.${styles["ripple-element"]}`);
+    const rippleExists = document.querySelector(
+      `.${this.styles["ripple-element"]}`
+    );
     if (rippleExists) {
       rippleExists.remove();
     }
@@ -54,20 +71,19 @@ export class Ripple {
    * @returns {HTMLDivElement}
    */
   createRippleElement(event, currentTarget) {
-    const $ripple = document.createElement("div");
-    $ripple.classList.add(styles["ripple-element"]);
+    const tamplate = new Ripple().render();
     const rect = currentTarget.getBoundingClientRect();
 
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-
     const startingPositionRelativeToClick = currentTarget.classList.contains(
-      styles["starting-position-click"]
+      this.styles["starting-position-click"]
     );
+
     if (startingPositionRelativeToClick) {
-      $ripple.style.top = `${y}px`;
-      $ripple.style.left = `${x}px`;
+      tamplate.style.top = `${y}px`;
+      tamplate.style.left = `${x}px`;
     }
-    return $ripple;
+    return tamplate;
   }
 }
