@@ -1,6 +1,7 @@
 @layer button {
   /* BUTTON */
   .button {
+    background-color: aqua;
       cursor: pointer;
       border: none;
       padding: 0 16px 0 12px;

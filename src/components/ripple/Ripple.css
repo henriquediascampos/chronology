@@ -1,9 +1,9 @@
 @layer ripple {
-  .light {
+  :global .light {
       --background-ripple: #0000001f;
   }
 
-  .dark {
+  :global .dark {
       --background-ripple: #ffffff1f;
   }
 

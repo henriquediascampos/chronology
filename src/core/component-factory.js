@@ -43,16 +43,3 @@ export function render(context) {
 
   return template;
 }
-
-
-export function stylesApplay(template, styles) {
-  Object.keys(styles).forEach(
-    function (cssClassName) {
-      const elements =
-        template.parentElement.getElementsByClassName(cssClassName);
-      Array.from(elements).forEach((element) => {
-        element.classList.replace(cssClassName, styles[cssClassName]);
-      });
-    }.bind(this)
-  );
-}

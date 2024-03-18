@@ -1,5 +1,5 @@
+// import '../styles/styles.css';
 import { initRoutes } from "../Routes";
-import '../styles/styles.css';
 import { initTheme } from "../styles/theme";
 import { appendChild } from "./component-factory";
 
