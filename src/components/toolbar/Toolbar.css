@@ -1,16 +1,25 @@
+
+
+
 .main {
-    margin-left: 300px;
-    width: 250px;
-    height: 250px;
-    background-color: red;
-    color: white;
     position: relative;
+    background-color: rgba(0, 0, 0, 0.507);
+    margin-top: 30px;
+    width: 450px;
+    height: 40px;
+    border-radius: 0px 40px 40px 0px;
+    
 }
 
-.ab {
-    width: 25px;
-    height: 25px;
-    background-color: rgb(111, 0, 255);
-    color: white;
+.main > .logo > img {
+    width: 300px;
     position: absolute;
+    background-position: left bottom;
+    
 }
+
+.botao {
+    margin: 100px;
+    padding: 10px;
+}
+
