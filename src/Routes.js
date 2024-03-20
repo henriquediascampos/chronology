@@ -9,17 +9,17 @@ export const ROUTES = [
   {
     path: "home",
     navigate: () =>
-      import("./pages/home/Home.js").then((module) => module.Home()),
+      import("./pages/home/Home.js").then((module) => new module.Home()),
   },
   {
     path: "login",
     navigate: () =>
-      import("./pages/login/Login.js").then((module) => module.Login()),
+      import("./pages/login/Login.js").then((module) => new module.Login()),
   },
 ];
 
 /**
- * 
+ *
  * @param {string} path endereço da rota que se deseja navegar
  */
 export function navigate(path) {
@@ -31,13 +31,13 @@ export function navigate(path) {
  */
 export function initRoutes() {
   window.location.hash = window.location.hash || "home";
-  
-  window.addEventListener("load", () => {
+
+  window.addEventListener("DOMContentLoaded", () => {
     handleRoute(window.location.hash);
 
-      window.addEventListener("hashchange", () => {
-        handleRoute(window.location.hash);
-      });
+    window.addEventListener("hashchange", () => {
+      handleRoute(window.location.hash);
+    });
   });
 }
 
@@ -46,6 +46,7 @@ export function initRoutes() {
  * @param {string} path
  */
 function handleRoute(path) {
+  console.log("handle", path);
   const _path = path.startsWith("#") ? path.slice(1) : path;
   const route = ROUTES.filter((r) => r.path === _path)[0];
   if (!route) {
@@ -55,6 +56,6 @@ function handleRoute(path) {
   routerOutlet.innerHTML = "";
 
   route.navigate().then((module) => {
-    appendChild(routerOutlet, module);
+    appendChild(routerOutlet, module.render());
   });
 }

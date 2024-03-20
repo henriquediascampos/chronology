@@ -1,4 +1,4 @@
-import { Componet } from "./Component";
+import { Component } from "./Component";
 
 /**
  *
@@ -29,12 +29,13 @@ export function appendChild(container, child) {
 
 /**
  *
- * @param {Componet} context
+ * @param {Component} context
  */
 export function render(context) {
   const { template, componentsRef } = context;
   componentsRef?.forEach((component) => {
     const customTag = Array.from(template.querySelectorAll(component.ref));
+
     customTag.forEach((element) => {
       const newComponent = new component.type(element, context);
       element.parentNode.replaceChild(newComponent.render(), element);

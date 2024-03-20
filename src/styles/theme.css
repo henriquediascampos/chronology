@@ -1,6 +1,6 @@
 @import url('color-palette.css');
 
-@layer light, dark, componet;
+@layer light, dark, component;
 
 @layer theme {
     .light {

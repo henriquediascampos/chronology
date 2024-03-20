@@ -1,8 +1,8 @@
 import styles from "./Ripple.css";
 import Tamplate from "./Ripple.html";
-import { Componet } from "../../core/Component.js";
+import { Component } from "../../core/Component.js";
 import { createElement } from "../../core/component-factory.js";
-export class Ripple extends Componet {
+export class Ripple extends Component {
   timeoutId;
 
   /**

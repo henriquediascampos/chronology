@@ -4,10 +4,9 @@ import { initTheme } from "../styles/theme";
 import { appendChild } from "./component-factory";
 
 export function init(app) {
-  window.addEventListener('load', () => {
-    initRoutes();
-    initTheme();
-  })
+  initRoutes();
+  initTheme();
+
   
   const root = document.querySelector("#root");
   appendChild(root, app)
