@@ -1,61 +1,48 @@
 @layer button {
-  /* BUTTON */
-  .button {
-    background-color: aqua;
-      cursor: pointer;
-      border: none;
-      padding: 0 16px 0 12px;
-      display: flex;
-      overflow: hidden;
-      min-width: 64px;
-      line-height: 36px;
-      height: 36px;
-      box-shadow:
-          0 3px 1px -2px #0003,
-          0 2px 2px #00000024,
-          0 1px 5px #0000001f;
-      border-radius: 4px;
-      user-select: none;
-      place-content: center;
-      align-items: center;
-      font-family:
-          Roboto,
-          Helvetica Neue,
-          sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-  }
-
-  .button.end-adorment {
-      padding: 0 12px 0 16px;
-  }
-
-  .button i {
-      margin: 0 4px 0 0;
-  }
-
-  .button.end-adorment i {
-      margin: 0 0 0 4px;
-  }
-
   /* BUTTON ICON */
   .button-icon {
-      z-index: 1;
-      position: relative;
-      cursor: pointer;
-      border: 0;
-      display: flex;
-      background: transparent;
-      overflow: visible;
-      user-select: none;
-      padding: 0;
-      min-width: 0;
-      width: 40px;
-      height: 40px;
-      flex-shrink: 0;
-      line-height: 40px;
-      border-radius: 50%;
-      place-content: center;
-      align-items: center;
+    z-index: 1;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    border: 0;
+    display: flex;
+    user-select: none;
+    padding: 0;
+    min-width: 0;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    line-height: 40px;
+    border-radius: 50%;
+    place-content: center;
+    align-items: center;
+    color: var(--color-fill);
+    outline: none;
+    transition: 200ms background-color ease-in-out;
+    background-color: var(--background-button);
+    color: var(--color-button);
+  }
+
+  .button-icon:hover::before {
+    content: '';
+    height: 100%;
+    width: 100%;
+    background-color: var(--background-button-hover);
+    position: absolute;
+    opacity: 0.35;
+    border-radius: inherit;
+  }
+
+  .button-icon span {
+    color: inherit;
+    opacity: 1;
+  }
+
+  .elevation {
+    box-shadow:
+      0 3px 1px -2px #0003,
+      0 2px 2px #00000024,
+      0 1px 5px #0000001f;
   }
 }

@@ -1,39 +1,59 @@
 import { checkDuplicatedValue } from '../utils/Array-utils';
-import { render } from './component-factory';
+import { BasicComponent } from './BasicComponent';
 
-export class Component {
+export class Component extends BasicComponent {
   /**
-   * @typedef ComponentRef
-   * @type {object}
-   * @property {Component} type class/construtor do compoente
-   * @property {string} ref tagname utilizada nesse contexto
-   *
-   * @type  {Array.<ComponentRef>}
+   * @type {string[]}
    */
-  componentsRef;
+  props;
 
+  /**
+   * @type {string[]}
+   */
+  functions;
+
+  /**
+   * @type {boolean} indicador de uso de componentes externos, usado para passar no validador que verifica a obrigatoriedade de informar componentesRef
+   */
   noExternalComponents = false;
 
   /**
-   * @type {Element}
+   * @param {ComponentProp} props propriedades para construção de Componet.
    */
-  template;
+  constructor(props) {
+    const {
+      templateString,
+      styles,
+      source,
+      context,
+      componentsRef,
+      noExternalComponents,
+    } = props;
 
-  /**
-   *
-   * @param {Element} template
-   * @param {Array.<ComponentRef>}  componentsRef
-   * @param {boolean} noExternalComponents
-   */
-  constructor(template, styles, componentsRef, noExternalComponents) {
-    this.template = template;
-    this.styles = styles;
-    this.componentsRef = componentsRef;
+    super({ templateString, styles, source, context, componentsRef });
     this.noExternalComponents = noExternalComponents;
 
+    this.validateParametersConstructor(templateString);
+
+    this.props = Object.getOwnPropertyNames(context);
+    this.functions = Object.getOwnPropertyNames(Object.getPrototypeOf(context));
+  }
+
+  validateParametersConstructor(template) {
     if (!this.template) {
       throw new Error(
         'Você não definiu template para seu componente! Importe seu html e use a função createElement de `component-factory` e passe seu string-html para criar seu template.',
+      );
+    }
+
+    if (!this.context) {
+      throw new Error(
+        `${this.constructor.name}:: Context é um parametro obrigatório em seu componente vc pode se vc estiver construindo um componente externo manualmente, vc deve passar
+            constructor(source, context) {
+              const templete = createElement(Template);
+              super(templete, styles, source, context, null, true);
+            }
+        `,
       );
     }
 
@@ -46,17 +66,20 @@ export class Component {
       throw new Error(`Você não definiu nenhuma referencia para seu componente ${this.constructor.name}!!!
           se você estiver usando componentes externos a ${this.constructor.name}, você deve definir as referencias dos mesmos na variável componentsRef
           ex: 
-            constructor() {
-              this.componentsRef = [
-                {
-                  type: Button,
-                  ref: 'app-button'
-                },
-                {
-                  type: Dialog,
-                  ref: 'app-dialog'
-                }
-              ]
+            constructor(source, context) {
+              const templete = createElement(Template);
+              super(templete, styles, source, context
+                [
+                  {
+                    type: Button,
+                    ref: 'app-button'
+                  },
+                  {
+                    type: Dialog,
+                    ref: 'app-dialog'
+                  }
+                ]
+              );
             }
           
           se não for o caso, defina a propriedade noExternalComponents para true`);
@@ -85,101 +108,100 @@ export class Component {
     }
   }
 
-  stylesApplay(template, styles) {
-    Object.keys(styles).forEach(
-      function (cssClassName) {
-        (template instanceof HTMLCollection ? Array.from(template) : [template])
-          .map(function (element) {
-            return element.parentElement.getElementsByClassName(cssClassName);
-          })
-          .forEach(function (elements) {
-            Array.from(elements).forEach((element) => {
-              element.classList.replace(cssClassName, styles[cssClassName]);
-            });
-          });
-      }.bind(this),
-    );
-  }
-
   /**
+   * @typedef {object} Props
+   * @property {string[]} specificPropsToIgnore
+   * @property {string[]} specificPropsToAssign
    *
-   * @param {Element} element
-   * @param {Component} context
-   * @param {object} IGNOREPROPS
+   * @param {Props} options
    * @param {Element} __tamplate
    */
-  setAttributes(element, context, IGNOREPROPS = {}, __tamplate) {
+  setAttributes({ specificPropsToAssign, specificPropsToIgnore }, __tamplate) {
     const template = __tamplate || this.template;
-    const props = Object.getOwnPropertyNames(context);
-    const attributes = element.getAttributeNames();
-    const functions = Object.getOwnPropertyNames(
-      Object.getPrototypeOf(context),
-    );
 
-    attributes
-      .filter((attr) => !Object.values(IGNOREPROPS).includes(attr))
-      .forEach((attr) => {
-        const value = element.getAttribute(attr);
+    let attributes = this.source?.getAttributeNames();
 
-        if (/^\{.+\}$/.test(value)) {
-          const propertyName = props.filter(
-            (fn) => fn === value.substring(1, value.length - 1),
-          )[0];
+    if (specificPropsToIgnore) {
+      attributes = attributes?.filter(
+        (attr) => !specificPropsToIgnore?.includes(attr),
+      );
+    }
 
-          if (propertyName) {
-            const property = context[propertyName];
+    if (specificPropsToAssign) {
+      attributes = attributes?.filter((attr) =>
+        specificPropsToAssign?.includes(attr),
+      );
+    }
 
-            if (property instanceof Function) {
-              template.setAttribute(attr, property.bind(context)());
-            } else {
-              template.setAttribute(attr, property);
-            }
+    attributes?.forEach((attr) => {
+      const value = this.source.getAttribute(attr);
+
+      if (/^\{.+\}$/.test(value)) {
+        const propertyName = this.props.filter(
+          (fn) => fn === value.substring(1, value.length - 1),
+        )[0];
+
+        if (propertyName) {
+          const property = this.context[propertyName];
+
+          if (property instanceof Function) {
+            template.setAttribute(attr, property.bind(this.context)());
           } else {
-            throw new Error(
-              `propriedade não definida em ${context.constructor.name}`,
-            );
+            template.setAttribute(attr, property);
           }
         } else {
-          if (attr === 'class') {
-            template.classList.add(value);
-          } else if (attr.startsWith('on')) {
-            const event = this.element.getAttribute(attr);
-            const eventName = attr.substring(2);
-            this.setEvent(event, eventName, props, functions, template);
-          } else {
-            template.setAttribute(attr, value);
-          }
+          throw new Error(
+            `propriedade não definida em ${this.context.constructor.name}`,
+          );
         }
-      });
+      } else {
+        if (attr === 'class') {
+          template.classList.add(value);
+        } else if (attr.startsWith('on')) {
+          const functionName = this.getFunctionName(attr);
+          const eventName = attr.substring(2); // remove o prefixo on dos eventos declarado inline nas tags html
+          this.setEvent(functionName, eventName, template);
+        } else {
+          template.setAttribute(attr, value);
+        }
+      }
+    });
   }
 
-  setEvent(event, eventName, props, functions, target) {
-    if (event) {
-      const functionContext = functions
-        .filter((fn) => fn === event.substring(0, event.indexOf('(')))
-        .map((fn) => this.context[fn].bind(this.context))[0];
+  getFunctionName(attr) {
+    let functionName = this.source.getAttribute(attr);
+    const index = functionName.indexOf('(');
 
-      const propsContext = props
-        .filter((fn) => fn === event.substring(0, event.indexOf('(')))
-        .map((fn) => this.context[fn].bind(this.context))
-        .filter((fn) => fn instanceof Function)[0];
+    functionName = functionName.substring(
+      0,
+      index < 1 ? functionName.length : index,
+    );
+    return functionName;
+  }
 
-      if (functionContext) {
-        target.addEventListener(eventName, (e) => functionContext(e));
-      } else if (propsContext) {
-        target.addEventListener(eventName, (e) => propsContext(e));
+  setEvent(functionName, eventName, target) {
+    if (functionName) {
+      const fn = this.extractPropContext(functionName);
+      if (fn) {
+        target.addEventListener(eventName, (e) => fn(e));
       } else {
-        target.addEventListener(eventName, () =>
-          console.log('método não implementado'),
+        throw new Error(
+          `a função ${functionName} não existe do componente ${this.constructor.name} originado em ${this.context.constructor.name}.`,
         );
       }
     }
   }
 
-  render() {
-    if (this.styles) {
-      this.stylesApplay(this.template, this.styles);
-    }
-    return render(this);
+  extractPropContext(fnName) {
+    const functionContext = this.functions
+      .filter((fn) => fn === fnName)
+      .map((fn) => this.context[fn].bind(this.context))[0];
+
+    const propsContext = this.props
+      .filter((fn) => fn === fnName)
+      .map((fn) => this.context[fn].bind(this.context))
+      .filter((fn) => fn instanceof Function)[0];
+
+    return functionContext || propsContext;
   }
 }

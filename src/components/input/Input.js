@@ -1,8 +1,42 @@
-import { createElement } from '../../core/component-factory.js';
 import { Component } from '../../core/Component.js';
 // import { Debounce } from '../debounce.js';
 import Template from './Input.html';
 import styles from './Input.css';
+import { IconButton } from '../icon-button/IconButton.js';
+
+const InputProps = Object.freeze({
+  END_ADORNMENT: 'end-adornment',
+  START_ADORNMENT: 'start-adornment',
+  END_ADORNMENT_ACTION: 'end-adornment-action',
+  START_ADORNMENT_ACTION: 'start-adornment-action',
+});
+
+const InputPropsDefault = Object.freeze({
+  required: 'required',
+  label: 'label',
+  variant: 'variant',
+  placeholder: 'placeholder',
+  //events
+  oninput: 'oninput',
+  onchange: 'onchange',
+  onfocus: 'onfocus',
+  onblur: 'onblur',
+  onkeydown: 'onkeydown',
+  onkeypress: 'onkeypress',
+  onkeyup: 'onkeyup',
+  onselect: 'onselect',
+  oncontextmenu: 'oncontextmenu',
+  oncut: 'oncut',
+  oncopy: 'oncopy',
+  onpaste: 'onpaste',
+  onmousedown: 'onmousedown',
+  onmouseenter: 'onmouseenter',
+  onmouseleave: 'onmouseleave',
+  onmousemove: 'onmousemove',
+  onmouseout: 'onmouseout',
+  onmouseover: 'onmouseover',
+  onmouseup: 'onmouseup',
+});
 
 /**
  * Cria um botão HTML.
@@ -36,18 +70,24 @@ export class Input extends Component {
    */
   #formField;
 
-  constructor(element, context) {
-    const templete = createElement(Template);
-    super(templete, styles, null, true);
-    this.context = context;
-    this.element = element;
+  /**
+   * @param {Prop} props
+   */
+  constructor({ source, context }) {
+    super({
+      templateString: Template,
+      styles,
+      source,
+      context,
+      noExternalComponents: true,
+    });
 
     this.#legend = this.template.querySelector('legend');
     this.#input = this.template.querySelector('input');
     this.#label = this.template.querySelector('label');
     this.#formField = this.template;
 
-    const variant = this.element.getAttribute('variant');
+    const variant = this.source.getAttribute('variant');
 
     if (!variant) {
       this.template.setAttribute('variant', 'outlined');
@@ -58,7 +98,7 @@ export class Input extends Component {
     this.disableForm();
     this.disabledField();
 
-    const label = element.getAttribute('label');
+    const label = this.source.getAttribute('label');
     if (!label) {
       throw new Error('o atributo "label é obrigatório"');
     }
@@ -66,23 +106,54 @@ export class Input extends Component {
     this.#legend.innerText = label;
     this.#label.innerText = this.#input.placeholder = label;
 
-    this.#input.placeholder = element.getAttribute('placeholder') || label;
+    this.#input.placeholder = this.source.getAttribute('placeholder') || label;
 
     if (this.template.hasAttribute('required')) {
       this.template.classList.add('required');
     }
 
     this.setAttributes(
-      element,
-      context,
-      {
-        required: 'required',
-        label: 'label',
-        variant: 'variant',
-        placeholder: 'placeholder',
-      },
+      { specificPropsToAssign: Object.values(InputPropsDefault) },
       this.#input,
     );
+
+    this.handleInput();
+  }
+
+  handleInput() {
+    if (this.source.hasAttribute(InputProps.END_ADORNMENT)) {
+      const endAdornment = this.source.getAttribute(InputProps.END_ADORNMENT);
+      const btn = document.createElement('button');
+      btn.setAttribute('color', 'inherit');
+      const icon = new IconButton({
+        source: btn,
+        context: this,
+        iconName: endAdornment,
+        adornment: 'end',
+      });
+
+      if (this.source.hasAttribute(InputProps.END_ADORNMENT_ACTION)) {
+        const actionName = this.source.getAttribute(
+          InputProps.END_ADORNMENT_ACTION,
+        );
+        const action = this.extractPropContext(actionName);
+        icon.setOnclick(action);
+      }
+      this.template.appendChild(icon.render());
+    }
+
+    if (this.source.hasAttribute(InputProps.START_ADORNMENT)) {
+      const endAdornment = this.source.getAttribute(InputProps.START_ADORNMENT);
+      const btn = document.createElement('button');
+      btn.setAttribute('color', 'inherit');
+      const icon = new IconButton({
+        source: btn,
+        context: this,
+        iconName: endAdornment,
+        adornment: 'start',
+      });
+      this.template.appendChild(icon.render());
+    }
   }
 
   /**
@@ -124,13 +195,13 @@ export class Input extends Component {
       this.#input.focus();
     });
 
-    const color = this.element.getAttribute('color');
+    const color = this.source.getAttribute('color');
 
     if (color) {
       this.#formField.style.setProperty('--text-input', color);
     }
 
-    const bgColor = this.element.getAttribute('bgColor');
+    const bgColor = this.source.getAttribute('bgColor');
 
     if (bgColor) {
       this.#formField.style.setProperty('--text-input', color);
@@ -176,27 +247,6 @@ export class Input extends Component {
       });
       input.dispatchEvent(event);
     });
-  }
-
-  /**
-   *
-   * @param {Application} selector
-   * @param {any} value
-   */
-  setValue(selector, value) {
-    const input = document.querySelector(selector);
-    const isRadio = input?.type === 'radio';
-    if (isRadio) {
-      if (input.value === value) {
-        input.checked = true;
-      } else {
-        const radio = input.parentElement.querySelector(`[value="${value}"]`);
-        radio.checked = true;
-      }
-    } else {
-      input.value = value;
-    }
-    this.emitEventContainer(input);
   }
 
   /**

@@ -1,13 +1,15 @@
-// import '../styles/styles.css';
-import { initRoutes } from "../Routes";
-import { initTheme } from "../styles/theme";
-import { appendChild } from "./component-factory";
+import { AbstractTheme } from './AbstractTheme';
+import { ComponentTree } from './ComponentTree';
+import { appendChild } from './component-factory';
 
-export function init(app) {
-  initRoutes();
-  initTheme();
+/**
+ *
+ * @param {HTMLElement} app
+ * @param {AbstractTheme} theme
+ */
+export function init(app, theme) {
+  theme.setTheme('light');
 
-  
-  const root = document.querySelector("#root");
-  appendChild(root, app)
+  const root = document.querySelector('#root');
+  appendChild(root, app);
 }

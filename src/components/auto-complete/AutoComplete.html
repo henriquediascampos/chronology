@@ -1,9 +1,13 @@
 <div class="root">
-  <input
+  <text-field
     onfocus="onfocus()"
     oninput="oninput()"
     onchange="onchange()"
     onblur="onblur()"
-  />
-  <ul class="dropdown"></ul>
+    end-adornment="search"
+    end-adornment-action="disabledFieldDebounce"
+  ></text-field>
+  <ul class="dropdown">
+    <li class="option">Sem opções</li>
+  </ul>
 </div>

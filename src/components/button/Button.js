@@ -1,12 +1,9 @@
-import Template from './Button.html';
-import styles from './Button.css';
-import { createElement } from '../../core/component-factory';
-import { Component } from '../../core/Component';
-import { Ripple } from '../ripple/Ripple';
 import { Icon } from '../icon/Icon';
+import { BasicButton } from './BasicButton';
+import styles from './Button.css';
+import Template from './Button.html';
 
-const BUTTON_PROPS = Object.freeze({
-  ONCLICK: 'onclick',
+const ButtonProps = Object.freeze({
   START_ICON: 'startIcon',
   END_ICON: 'endIcon',
   BG_COLOR: 'bgColor',
@@ -19,44 +16,51 @@ const BUTTON_PROPS = Object.freeze({
  * @param {object} context - O icone.
  * @throws {Error} - Se os parâmetros handleClick ou label forem omitidos.
  */
-export class Button extends Component {
+export class Button extends BasicButton {
   /** @type {HTMLButtonElement} btn */
 
-  constructor(element, context) {
-    const template = createElement(Template);
-    super(template, null, null, true);
+  constructor(props) {
+    super({
+      templateString: Template,
+      styles,
+      ...props,
+      noExternalComponents: true,
+    });
 
-    //atribuições
-    this.attributes = element.getAttributeNames();
-    this.functions = Object.getOwnPropertyNames(Object.getPrototypeOf(context));
-    this.props = Object.getOwnPropertyNames(context);
-    this.context = context;
-    this.element = element;
+    //atributos
+    this.attributes = this.source.getAttributeNames();
 
     //start da logica
-    this.validate(context);
-    this.setAttributes(this.element, this.context, BUTTON_PROPS);
+    this.validate(this.context);
+    this.setAttributes({ specificPropsToIgnore: Object.values(ButtonProps) });
 
-    if (element.hasAttribute(BUTTON_PROPS.START_ICON)) {
-      const textIcon = element.getAttribute(BUTTON_PROPS.START_ICON);
-      const icon = new Icon({ value: textIcon }).render();
+    if (this.source.hasAttribute(ButtonProps.START_ICON)) {
+      const textIcon = this.source.getAttribute(ButtonProps.START_ICON);
+      const icon = new Icon({
+        source: this.template,
+        context: this,
+        value: textIcon,
+      }).render();
 
       this.template.append(icon);
-      this.template.classList.add('start-adorment');
+      this.template.classList.add('start-adornment');
     }
-    this.template.append(...element.childNodes);
+    this.template.append(...this.source.childNodes);
 
-    if (element.hasAttribute(BUTTON_PROPS.END_ICON)) {
-      const textIcon = element.getAttribute(BUTTON_PROPS.START_ICON);
-      const icon = new Icon({ value: textIcon }).render();
+    if (this.source.hasAttribute(ButtonProps.END_ICON)) {
+      const textIcon = this.source.getAttribute(ButtonProps.START_ICON);
+      const icon = new Icon({
+        source: this.template,
+        context: this,
+        value: textIcon,
+      }).render();
 
       this.template.append(icon);
-      this.template.classList.add('end-adorment');
+      this.template.classList.add('end-adornment');
     }
 
     this.handleButton();
-    this.styles = styles;
-    this.stylesApplay(template, styles);
+    this.stylesApply();
   }
 
   validate() {
@@ -70,14 +74,5 @@ export class Button extends Component {
         )}`,
       );
     }
-  }
-
-  handleButton() {
-    new Ripple(this.template, this);
-    const color = this.template.getAttribute('color');
-    const bgColor = this.template.getAttribute('bgcolor');
-    this.template.style.setProperty('--color-fill', color || '#000');
-    this.template.style.color = color;
-    this.template.style.backgroundColor = bgColor;
   }
 }

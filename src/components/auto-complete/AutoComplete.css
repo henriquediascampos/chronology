@@ -25,7 +25,7 @@
     padding: 0;
     position: absolute;
     background-color: #2b2b2b;
-    height: 300px;
+    height: 0px;
     width: 100%;
     background-color: var(--paper);
     z-index: 2001;
@@ -60,7 +60,7 @@
     transform: rotateZ(-90deg);
   }
 
-  .dropdown li {
+  .dropdown .option {
     cursor: pointer;
     height: 30px;
     width: 100%;
@@ -74,11 +74,11 @@
     align-items: center;
   }
 
-  .dropdown li:hover {
+  .dropdown .option:hover {
     background-color: #8c8c8c27;
   }
 
-  .dropdown li.focus {
+  .dropdown .option.focus {
     background-color: #8c8c8c40;
   }
 }

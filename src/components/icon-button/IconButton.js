@@ -1,14 +1,14 @@
-import Template from './IconButton.html';
-import styles from './IconButton.css';
-import { createElement } from '../../core/component-factory';
 import { Component } from '../../core/Component';
-import { Ripple } from '../ripple/Ripple';
+import { BasicButton } from '../button/BasicButton';
 import { Icon } from '../icon/Icon';
+import styles from './IconButton.css';
+import Template from './IconButton.html';
 
-const BUTTON_PROPS = Object.freeze({
+const IconButtonProps = Object.freeze({
   ONCLICK: 'onclick',
   BG_COLOR: 'bgColor',
   CLASS: 'class',
+  ELEVATION: 'elevation',
 });
 
 /**
@@ -17,89 +17,75 @@ const BUTTON_PROPS = Object.freeze({
  * @param {object} context - O icone.
  * @throws {Error} - Se os parâmetros handleClick ou label forem omitidos.
  */
-export class IconButton extends Component {
+export class IconButton extends BasicButton {
   /** @type {HTMLButtonElement} btn */
 
-  constructor(element, context) {
-    const template = createElement(Template);
-    super(template, null, null, true);
+  /**
+   * @param {Prop & { iconName: string, adornment: 'start'|'end'}} param0
+   */
+  constructor({ iconName, adornment, ...props }) {
+    super({
+      templateString: Template,
+      styles,
+      ...props,
+      noExternalComponents: true,
+    });
 
     //atribuições
-    this.attributes = element.getAttributeNames();
-    this.functions = Object.getOwnPropertyNames(Object.getPrototypeOf(context));
-    this.props = Object.getOwnPropertyNames(context);
-    this.context = context;
-    this.element = element;
+    this.attributes = this.source?.getAttributeNames();
+    this.functions = Object.getOwnPropertyNames(
+      Object.getPrototypeOf(this.context),
+    );
+    this.props = Object.getOwnPropertyNames(this.context);
 
     //start da logica
-    this.validate(context);
+    this.validate(this.context);
     this.setOnclick();
-    this.setAttributes();
 
-    const textIcon = element.textContent;
-    const icon = new Icon({ value: textIcon }).render();
+    this.setAttributes({
+      specificPropsToIgnore: Object.values(IconButtonProps),
+    });
+
+    const textIcon = this.source?.textContent || iconName;
+    const icon = new Icon({
+      source: this.template,
+      context: this,
+      value: textIcon,
+    }).render();
     this.template.append(icon);
 
     this.handleButton();
-    this.styles = styles;
-    this.stylesApplay(template, styles);
+    this.stylesApply();
+    this.adornment(adornment);
   }
 
-  setAttributes() {
-    this.attributes
-      .filter((attr) => !Object.values(BUTTON_PROPS).includes(attr))
-      .forEach((attr) => {
-        const value = this.element.getAttribute(attr);
+  /**
+   *
+   * @param {'start' | 'end'} adornment
+   */
 
-        if (/^\{.+\}$/.test(value)) {
-          const propertyName = this.props.filter(
-            (fn) => fn === value.substring(1, value.length - 1),
-          )[0];
-
-          if (propertyName) {
-            const property = this.context[propertyName];
-            if (property instanceof Function) {
-              this.template.setAttribute(attr, property.bind(this.context)());
-            } else {
-              this.template.setAttribute(attr, property);
-            }
-          } else {
-            throw new Error(
-              `propriedade não definida em ${this.context.constructor.name}`,
-            );
-          }
-        } else {
-          this.template.setAttribute(attr, value);
-        }
-      });
-  }
-
-  setOnclick() {
-    const onclick = this.element.getAttribute('onclick');
-
-    if (onclick) {
-      const functionContext = this.functions
-        .filter((fn) => fn === onclick.substring(0, onclick.indexOf('(')))
-        .map((fn) => this.context[fn].bind(this.context))[0];
-
-      const propsContext = this.props
-        .filter((fn) => fn === onclick.substring(0, onclick.indexOf('(')))
-        .map((fn) => this.context[fn].bind(this.context))
-        .filter((fn) => fn instanceof Function)[0];
-
-      if (functionContext) {
-        this.template.addEventListener('click', (e) => functionContext(e));
-      } else if (propsContext) {
-        this.template.addEventListener('click', (e) => propsContext(e));
-      } else {
-        this.template.addEventListener('click', () =>
-          console.log('método não implementado'),
-        );
-      }
+  adornment(type) {
+    if (type) {
+      this.template.classList.add(this.styles[`${type}-adornment`]);
     }
   }
 
-  validate(context) {
+  /**
+   *
+   * @param {Function} action
+   */
+  setOnclick(action) {
+    if (action) {
+      this.template.addEventListener('click', (e) => action(''));
+    }
+
+    if (this.source?.hasAttribute('onclick')) {
+      const functionName = this.getFunctionName('onclick');
+      this.setEvent(functionName, 'click', this.template);
+    }
+  }
+
+  validate() {
     if (this.functions.some((fn) => this.props.includes(fn))) {
       const duplicated = this.functions.filter((fn) => this.props.includes(fn));
       throw new Error(
@@ -113,11 +99,15 @@ export class IconButton extends Component {
   }
 
   handleButton() {
-    new Ripple(this.template, this);
+    super.handleButton();
     const color = this.template.getAttribute('color');
-    const bgColor = this.template.getAttribute('bgcolor');
-    this.template.style.setProperty('--color-fill', color || '#000');
-    this.template.style.color = color;
-    this.template.style.backgroundColor = bgColor;
+
+    if (!color) {
+      this.template.style.setProperty('--background-button', 'trasparent');
+    }
+
+    if (this.source.hasAttribute('elevation')) {
+      this.template.classList.add(styles.elevation);
+    }
   }
 }
