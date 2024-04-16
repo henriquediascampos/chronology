@@ -1,89 +1,139 @@
-import styles from "./Ripple.css";
-import Tamplate from "./Ripple.html";
-import { Componet } from "../../core/Component.js";
-import { createElement } from "../../core/component-factory.js";
-export class Ripple extends Componet {
-  timeoutId;
+import { BasicComponent } from '../../core/BasicComponent.js';
+import styles from './Ripple.css';
+import Tamplate from './Ripple.html';
+export class Ripple extends BasicComponent {
+  /** @type {string[]} */
+  ids = [];
 
   /**
-   * @param {HTMLButtonElement} _ - O icone.
-   * @param {object} context - O icone.
+   * @param {Prop} prop
    */
-  constructor(_, context) {
-    const tamplate = createElement(Tamplate);
-    super(tamplate, styles, null, true);
+  constructor(prop) {
+    const { source, context } = prop || {};
+
+    super({
+      templateString: Tamplate,
+      styles,
+      source,
+      context,
+      noExternalComponents: true,
+    });
 
     if (context?.template) {
       this.addRippleEffect(context.template);
     }
   }
 
-  addRippleEffect(elementRipple) {
-    elementRipple.classList.add(
-      this.styles["ripple"],
-      this.styles["starting-position-click"]
+  /**
+   *
+   * @param {HTMLElement} targetRipple
+   */
+  addRippleEffect(targetRipple) {
+    targetRipple.classList.add(
+      this.styles['ripple'],
+      this.styles['starting-position-click'],
     );
-    elementRipple.addEventListener("mousedown", (event) => {
-      clearTimeout(this.timeoutId);
-      this.removeRippleElementExists();
-      const $target = event.currentTarget;
-      const $ripple = this.createRippleElement(event, $target);
 
-      $target.appendChild($ripple);
-      setTimeout(() => {
-        $ripple.classList.add(this.styles["ripple-element-on"]);
-      }, 0);
+    targetRipple.addEventListener('mousedown', (event) => {
+      this.openRipple(event);
     });
 
-    elementRipple.addEventListener("mouseleave", (e) => {
+    targetRipple.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        this.openRipple(event);
+        this.autoRemove();
+      }
+    });
+
+    targetRipple.addEventListener('mouseleave', (e) => {
       if (e.buttons > 0) {
         this.removeRippleElementExists();
       }
     });
 
-    elementRipple.addEventListener("mouseup", () => {
-      const rippleElement = document.querySelector(
-        `.${styles["ripple-element"]}`
-      );
-      if (rippleElement) {
-        rippleElement.classList.add(this.styles["ripple-element-off"]);
-      }
-      
-      this.timeoutId = setTimeout(() => {
-        this.removeRippleElementExists();
-      }, 1500);
+    targetRipple.addEventListener('mouseup', () => {
+      this.autoRemove();
     });
   }
 
+  autoRemove() {
+    const id = this.ids.shift();
+    const rippleElement = document.querySelector(`#${id}`);
+    if (rippleElement && id) {
+      setTimeout(() => {
+        rippleElement.classList.add(this.styles['ripple-element-off']);
+      }, 150);
+      setTimeout(() => {
+        this.removeRippleElementExists();
+      }, 896);
+    }
+  }
+
+  /**
+   *
+   * @param {Event} event
+   */
+  openRipple(event) {
+    const $target = event.currentTarget;
+    const $ripple = this.createRippleElement(event, $target);
+    $target.appendChild($ripple);
+
+    setTimeout(() => {
+      $ripple.classList.add(this.styles['ripple-element-on']);
+    }, 50);
+  }
+
   removeRippleElementExists() {
-    const rippleExists = document.querySelector(
-      `.${this.styles["ripple-element"]}`
-    );
-    if (rippleExists) {
+    const id = this.ids.shift();
+    const rippleExists = document.querySelector(`#${id}`);
+    if (rippleExists && id) {
       rippleExists.remove();
     }
   }
 
   /**
    *
-   * @param {MouseEvent} event
+   * @param {MouseEvent | KeyboardEvent} event
    * @param {HTMLElement} currentTarget
    * @returns {HTMLDivElement}
    */
   createRippleElement(event, currentTarget) {
+    /**@type {HTMLDivElement} */
     const tamplate = new Ripple().render();
+    tamplate.id = this.generateUniqueId();
+    this.ids.push(tamplate.id);
+
     const rect = currentTarget.getBoundingClientRect();
 
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
     const startingPositionRelativeToClick = currentTarget.classList.contains(
-      this.styles["starting-position-click"]
+      this.styles['starting-position-click'],
     );
+    const { offsetWidth } = currentTarget;
+    let side = offsetWidth * 1.15;
+    if (event instanceof MouseEvent) {
+      const distanceToLeft = x;
+      const distanceToRight = offsetWidth - x;
+      const distanceToEdge = Math.max(distanceToLeft, distanceToRight);
+      side = distanceToEdge * 2.2;
+    }
+    tamplate.style.setProperty('--ripple-side', `${side}px`);
 
-    if (startingPositionRelativeToClick) {
+    if (startingPositionRelativeToClick && event instanceof MouseEvent) {
       tamplate.style.top = `${y}px`;
       tamplate.style.left = `${x}px`;
+    } else {
+      tamplate.classList.add(styles.suspend);
     }
     return tamplate;
+  }
+
+  generateUniqueId() {
+    const timestamp = new Date().getTime();
+    const randomValue = Math.floor(Math.random() * 10000);
+    const uniqueId = `ripple-${timestamp}-${randomValue}`;
+
+    return uniqueId;
   }
 }

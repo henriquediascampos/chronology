@@ -1,20 +1,20 @@
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   entry: {
-    index: "./src/index.js",
+    index: './src/index.js',
   },
-  mode: "development",
+  mode: 'development',
   output: {
-    filename: "[name].[contenthash].bundle.js",
-    path: path.resolve(__dirname, "dist"),
+    filename: '[name].[contenthash].bundle.js',
+    path: path.resolve(__dirname, 'dist'),
   },
-  devtool: "source-map",
+  devtool: 'source-map',
   devServer: {
-    static: "./dist",
+    static: './dist',
   },
   module: {
     rules: [
@@ -23,15 +23,15 @@ module.exports = {
         use: [
           MiniCssExtractPlugin.loader,
           {
-            loader: "css-loader",
+            loader: 'css-loader',
             options: {
               sourceMap: true,
               modules: {
                 mode: (file) =>
-                  file.startsWith(path.resolve(__dirname, "src/styles/"))
-                    ? "global"
-                    : "local",
-                localIdentName: "[name]__[local]",
+                  file.startsWith(path.resolve(__dirname, 'src/styles/'))
+                    ? 'global'
+                    : 'local',
+                localIdentName: '[name]__[local]',
               },
             },
           },
@@ -39,27 +39,27 @@ module.exports = {
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        type: "asset/resource",
+        type: 'asset/resource',
       },
       {
         test: /\.html$/,
-        use: "html-loader",
+        use: 'html-loader',
       },
     ],
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "css/style.css",
+      filename: 'css/style.css',
     }),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, "public/index.html"),
-      filename: "index.html",
+      template: path.resolve(__dirname, 'public/index.html'),
+      filename: 'index.html',
     }),
     new CleanWebpackPlugin(),
   ],
   optimization: {
     splitChunks: {
-      chunks: "all",
+      chunks: 'all',
       minSize: 1,
     },
   },

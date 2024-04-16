@@ -1,0 +1,50 @@
+@layer button {
+  .button {
+    position: relative;
+    background-color: var(--background-button);
+    color: var(--color-button);
+    cursor: pointer;
+    border: none;
+    padding: 0 16px 0 12px;
+    display: flex;
+    overflow: hidden;
+    min-width: 64px;
+    line-height: 36px;
+    height: 36px;
+    box-shadow:
+      0 3px 1px -2px #0003,
+      0 2px 2px #00000024,
+      0 1px 5px #0000001f;
+    border-radius: 4px;
+    user-select: none;
+    place-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 700;
+    outline: none;
+  }
+
+  .button:hover::before {
+    top: 0;
+    left: 0;
+    content: '';
+    height: 100%;
+    width: 100%;
+    background-color: var(--background-button-hover);
+    position: absolute;
+    opacity: 0.3;
+    z-index: 0;
+  }
+
+  .button.end-adornment {
+    padding: 0 12px 0 16px;
+  }
+
+  .button span {
+    margin: 0 4px 0 0;
+  }
+
+  .button.end-adornment i {
+    margin: 0 0 0 4px;
+  }
+}

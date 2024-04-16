@@ -1,25 +1,31 @@
-
-
-
 .main {
-    position: relative;
-    background-color: rgba(0, 0, 0, 0.507);
-    margin-top: 30px;
-    width: 450px;
-    height: 40px;
-    border-radius: 0px 40px 40px 0px;
-    
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.507);
+  top: 60px;
+  width: 570px;
+  height: 50px;
+  border-radius: 0px 40px 40px 0px;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
 }
 
-.main > .logo > img {
-    width: 300px;
-    position: absolute;
-    background-position: left bottom;
-    
+.logo > img {
+  width: 120px;
+  position: absolute;
+  top: -15%;
+  left: 1%;
 }
 
-.botao {
-    margin: 100px;
-    padding: 10px;
+.button {
+  margin-left: 130px;
+  padding: 10px;
 }
 
+.input-custom {
+  padding: 10px;
+  width: 180px;
+}
+
+.minimiza {
+}

@@ -3,4 +3,27 @@
     height: 100vh;
     margin: 0;
     padding: 0;
-}
+  }
+  
+  .container-btn {
+    position: fixed;
+    top: 8px;
+    right: 8px;
+  }
+  .container-btn > * {
+    opacity: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translateX(-100%);
+    transition: opacity 200ms ease-in-out;
+  }
+  
+  :global .light :local .container-btn > :nth-child(1) {
+    opacity: 0;
+  }
+  
+  :global .dark :local .container-btn > :nth-child(2) {
+    opacity: 0;
+  }
+  

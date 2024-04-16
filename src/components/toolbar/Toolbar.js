@@ -1,10 +1,34 @@
-import { Componet } from "../../core/Component";
-import template from "./Toolbar.html"
-import { createElement } from "../../core/component-factory";
-import style from "./Toolbar.css"
+import template from './Toolbar.html';
+import styles from './Toolbar.css';
+import { Button } from '../button/Button';
+import { Input } from '../input/Input';
+import { Component } from '../../core/Component';
+import { IconButton } from '../icon-button/IconButton';
 
-export class Toolbar extends Componet {
-    constructor (){
-        super(createElement(template), style, null, true)
-    }
+export class Toolbar extends Component {
+  /**
+   *
+   * @param {Prop} props
+   */
+  constructor(props) {
+    super({
+      ...props,
+      templateString: template,
+      styles,
+      componentsRef: [
+        {
+          ref: 'app-button',
+          type: Button,
+        },
+        {
+          ref: 'input-custom',
+          type: Input,
+        },
+        {
+          ref: 'mini-miza',
+          type: IconButton,
+        },
+      ],
+    });
+  }
 }

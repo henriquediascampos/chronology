@@ -1,35 +1,36 @@
-import Template from "./App.html";
-import { Button } from "./components/app-button/Button";
-import { Componet } from "./core/Component";
-import { createElement } from "./core/component-factory";
-import style from './App.css';
-import { Toolbar } from "./components/toolbar/Toolbar";
-
-export default class App extends Componet {
-  
-  patos = () => 'arroz'
-
-  constructor() {
-    const template = createElement(Template);
-    super(
-      template, style,
-      [
+import styles from './App.css';
+import Template from './App.html';
+import { IconButton } from './components/icon-button/IconButton';
+import { BasicComponent } from './core/BasicComponent';
+import { Router } from './routes/Router';
+import { Theme } from './styles/theme';
+import { Toolbar } from './components/toolbar/Toolbar'
+export default class App extends BasicComponent {
+  constructor(prop) {
+    const { source, context } = prop || {};
+    super({
+      templateString: Template,
+      styles,
+      source,
+      context,
+      componentsRef: [
         {
-          ref: 'app-button',
-          type: Button
+          ref: 'route',
+          type: Router,
         },
         {
           ref: 'toolbar',
-          type: Toolbar
-        }       
+          type: Toolbar,
+        },
+        {
+          ref: 'btn',
+          type: IconButton,
+        },
       ],
-      true)
-  }
-    
-  ovosmexidos() {
-    console.log('teste de visibilidade do js');
+    });
   }
 
-
+  toogleTheme() {
+    Theme.getInstance().toogleTheme();
+  }
 }
-
