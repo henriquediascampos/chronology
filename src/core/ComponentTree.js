@@ -144,7 +144,10 @@ export class ComponentTree {
    */
   reconciliation(prop, tree) {
     if (prop === 'textContent') {
-      tree.element.textContent = tree.props[prop].value;
+      tree.element.textContent = tree.props[prop].textContent.replaceAll(
+        tree.props[prop].integrateValue,
+        tree.props[prop].value,
+      );
     } else if (tree.element?.hasAttribute(prop)) {
       tree.element.setAttribute(prop, tree.props[prop].value);
     }
