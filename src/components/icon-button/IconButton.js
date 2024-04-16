@@ -110,4 +110,29 @@ export class IconButton extends BasicButton {
       this.template.classList.add(styles.elevation);
     }
   }
+
+  textContent(value) {
+    const icon = new Icon({
+      source: this.template,
+      context: this,
+      value: value,
+    }).render();
+
+    this.template.querySelector('.material-symbols-outlined').replaceWith(icon);
+
+    // icon.classList.add(styles.opacity);
+    // Array.from(
+    //   this.template.querySelectorAll('.material-symbols-outlined'),
+    // ).forEach((oldIcon) => {
+    //   oldIcon.classList.add(styles.opacity);
+    //   setTimeout(() => {
+    //     oldIcon.remove();
+    //   }, 180);
+    // });
+
+    // this.template.appendChild(icon);
+    // setTimeout(() => {
+    //   icon.classList.remove(styles.opacity);
+    // }, 120);
+  }
 }

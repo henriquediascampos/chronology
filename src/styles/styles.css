@@ -1,7 +1,7 @@
-@import url("reset.css");
-@import url("theme.css");
-@import url("flex.css");
-@import url("utils.css");
+@import url('reset.css');
+@import url('theme.css');
+@import url('flex.css');
+@import url('utils.css');
 
 #root {
   width: 100vw;
@@ -10,8 +10,10 @@
   padding: 0;
 }
 
-.hidden {
-  display: none;
+[router-outlet] {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
 }
 
 ::-webkit-scrollbar {

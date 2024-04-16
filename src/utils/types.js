@@ -75,6 +75,9 @@
  * @property {Tree[]} children
  * @property {NodeProp} props
  * @property {HTMLElement} element
+ * @property {HTMLElement} elementRender
+ * @property {string} updateEvent
+ * @property {string} componentName
  *
  * @typedef {object} ComponentItem
  * @property {string} id

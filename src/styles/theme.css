@@ -1,168 +1,62 @@
 /* @import url('color-palette.css');
 
-@layer light, dark, componet;
+@layer light, dark, component;
 
 @layer theme {
-    .light {
-        --primary: var(--primary-500);
-        --secondary: var(--secondary-500);
+  .light {
+    --primary: var(--primary-main-light);
+    --primary: var(--primary-light-light);
+    --primary: var(--primary-dark-light);
 
-        --background: var(--gray-50);
-        --paper: #c5c5c5;
+    --secondary: var(--secondary-main-light);
+    --secondary: var(--secondary-light-light);
+    --secondary: var(--secondary-dark-light);
 
-        --text: var(--gray-900);
-        --contrast: #6c757d;
-    }
+    --background: var(--background-light);
+    --paper: var(--paper-light);
 
-    .dark {
-        --primary: var(--primary-500);
-        --secondary: var(--secondary-500);
+    --contrast-text: var(--contrast-text-light);
+    --error: var(--error--light);
+    --info: var(--info--light);
+    --success: var(--success--light);
+    --warning: var(--warning--light);
 
-        --background: #282a36;
-        --paper: #21222c;
+    --gray-50: var(--gray-50-light);
+    --gray-100: var(--gray-100-light);
+    --gray-200: var(--gray-200-light);
+    --gray-300: var(--gray-300-light);
+    --gray-400: var(--gray-400-light);
+    --gray-500: var(--gray-500-light);
+    --gray-600: var(--gray-600-light);
+    --gray-700: var(--gray-700-light);
+  }
 
-        --text: var(--gray-50);
-        --contrast: #6c757d;
-    }
+  .dark {
+    --primary: var(--primary-main-dark);
+    --primary: var(--primary-light-dark);
+    --primary: var(--primary-dark-dark);
 
-    .container {
-        background-color: var(--background);
-    }
+    --secondary: var(--secondary-main-dark);
+    --secondary: var(--secondary-light-dark);
+    --secondary: var(--secondary-dark-dark);
 
-    input,
-    span,
-    textarea,
-    label,
-    select,
-    div,
-    button {
-        color: var(--text);
-        fill: var(--text);
-    }
-}
+    --background: var(--background-dark);
+    --paper: var(--paper-dark);
 
-@layer theme.light {
-    .light.background,
-    .light .background {
-        background-color: var(--background);
-    }
+    --contrast-text: var(--contrast-text-dark);
 
-    .light.paper,
-    .light .paper {
-        background-color: var(--paper);
-    }
+    --error: var(--error--dark);
+    --info: var(--info--dark);
+    --success: var(--success--dark);
+    --warning: var(--warning--dark);
 
-    .light.primary,
-    .light .primary {
-        background-color: var(--primary);
-        color: #fff;
-    }
-
-    .light.secondary,
-    .light .secondary {
-        background-color: var(--secondary);
-        color: #fff;
-    }
-
-    .light.warn,
-    .light .warn {
-        background-color: var(--warn);
-        color: #fff;
-    }
-
-    .light.error,
-    .light .error {
-        background-color: var(--error);
-        color: #fff;
-    }
-}
-
-@layer theme.dark {
-    .dark.background,
-    .dark .background {
-        background-color: var(--background);
-    }
-    .dark.paper,
-    .dark .paper {
-        background-color: var(--paper);
-    }
-
-    .dark.primary,
-    .dark .primary {
-        background-color: var(--primary);
-        color: #fff;
-    }
-
-    .dark.secondary,
-    .dark .secondary {
-        background-color: var(--secondary);
-        color: #fff;
-    }
-
-    .dark.warn,
-    .dark .warn {
-        background-color: var(--warn);
-        color: #fff;
-    }
-
-    .dark.error,
-    .dark .error {
-        background-color: var(--error);
-        color: #fff;
-    }
-}
-
-@layer component {
-    [color='text'] {
-        color: var(--text);
-    }
-
-    [color='contrast'] {
-        color: var(--contrast);
-    }
-
-    [color='primary'] {
-        color: var(--primary);
-    }
-
-    [color='secondary'] {
-        color: var(--secondary);
-    }
-
-    [color='disabled'] {
-        color: var(--disabled);
-    }
-
-    [bgcolor='text'] {
-        background-color: var(--text);
-        color: var(--contrast);
-    }
-
-    [bgcolor='contrast'] {
-        background-color: var(--contrast);
-        color: var(--text);
-        fill: var(--text);
-    }
-
-    [bgcolor='primary'] {
-        background-color: var(--primary);
-        color: var(--gray-50);
-        fill: var(--gray-50);
-    }
-
-    [bgcolor='secondary'] {
-        background-color: var(--secondary);
-        color: var(--gray-50);
-        fill: var(--gray-50);
-    }
-
-    [bgcolor='disabled'] {
-        background-color: var(--disabled);
-        color: var(--gray-200);
-        fill: var(--gray-200);
-    }
-
-    [bgcolor='transparent'] {
-      background-color: transparent;
+    --gray-50: var(--gray-50-dark);
+    --gray-100: var(--gray-100-dark);
+    --gray-200: var(--gray-200-dark);
+    --gray-300: var(--gray-300-dark);
+    --gray-400: var(--gray-400-dark);
+    --gray-500: var(--gray-500-dark);
+    --gray-600: var(--gray-600-dark);
+    --gray-700: var(--gray-700-dark);
   }
 } */

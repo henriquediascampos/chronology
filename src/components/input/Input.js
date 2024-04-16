@@ -51,6 +51,11 @@ export class Input extends Component {
   // );
 
   /**
+   * @type {string}
+   */
+  value = '';
+
+  /**
    * @type {HTMLLegendElement}
    */
   #legend;
@@ -165,6 +170,7 @@ export class Input extends Component {
       mutations.forEach((mutation) => {
         if (mutation.attributeName === 'class') {
           // this.#disabledFieldDebounce(form);
+          // console.log('patos', mutation.attributeName);
         }
       });
     });
