@@ -1,7 +1,7 @@
 import styles from './App.css';
 import Template from './App.html';
 import { IconButton } from './components/icon-button/IconButton';
-import { MinimalToolbar } from './components/minimal-toolbar/MinimalToolbar';
+import { Toolbar } from './components/toolbar/Toolbar';
 import { BasicComponent } from './core/BasicComponent';
 import { Router } from './routes/Router';
 import { Theme } from './styles/theme';
@@ -20,8 +20,8 @@ export default class App extends BasicComponent {
           type: Router,
         },
         {
-          ref: 'minimal-toolbar',
-          type: MinimalToolbar,
+          ref: 'toolbar',
+          type: Toolbar,
         },
         {
           ref: 'btn',
