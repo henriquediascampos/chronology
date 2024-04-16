@@ -51,6 +51,11 @@ export class Input extends Component {
   // );
 
   /**
+   * @type {string}
+   */
+  value = '';
+
+  /**
    * @type {HTMLLegendElement}
    */
   #legend;

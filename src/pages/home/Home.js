@@ -2,9 +2,10 @@ import { Component } from '../../core/Component';
 import styles from './Home.css';
 import Tamplate from './Home.html';
 import { Input } from '../../components/input/Input';
+import { IconButton } from '../../components/icon-button/IconButton';
 export class Home extends Component {
   valueState = '';
-
+  iconBtn = 'clear';
   /**
    *
    * @param {Prop} props
@@ -19,12 +20,15 @@ export class Home extends Component {
           ref: 'textInput',
           type: Input,
         },
+        {
+          ref: 'iconbutton',
+          type: IconButton,
+        },
       ],
     });
 
-    this.template.querySelector('[teste]').addEventListener('input', (e) => {
+    this.template.querySelector('[teste]')?.addEventListener('input', (e) => {
       this.setState('valueState', e.target.value);
-      console.log('input:', this.valueState);
     });
 
     setTimeout(() => {
@@ -34,7 +38,14 @@ export class Home extends Component {
   }
 
   render() {
-    console.log('state:', this.valueState);
     return super.render();
+  }
+
+  toggle() {
+    if (this.iconBtn !== 'home') {
+      this.setState('iconBtn', 'home');
+    } else {
+      this.setState('iconBtn', 'clear');
+    }
   }
 }

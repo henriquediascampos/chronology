@@ -62,6 +62,22 @@ export class BasicComponent {
     const prefix = this.constructor.name.toLowerCase();
     this.id =
       prop?.id || `${prefix}_${Math.random().toString(36).substring(2, 9)}`;
+
+    this.template.addEventListener('meuEvento', (e) => {
+      console.log('event', e);
+    });
+  }
+
+  /**
+   *
+   * @param {Event} event
+   */
+  triggerUpdate() {
+    this.template.addEventListener(this.id, (e) => {
+      const { stateName, stateValue, literalValue } = e.detail;
+      console.log('event', stateName, stateValue, literalValue);
+      this.setState(stateName, stateValue);
+    });
   }
 
   stylesApply() {
@@ -100,10 +116,19 @@ export class BasicComponent {
     return doc.body.firstChild;
   }
 
+  /**
+   *
+   * @returns {Element}
+   */
   render() {
     if (this.styles) {
       this.stylesApply();
     }
+
+    const tree = ComponentTree.getInstance();
+
+    this.nodeTree = tree.buildTreeFromNode(this.template, this, this.id);
+    tree.reconciliationAll(this.nodeTree);
 
     this.componentsRef?.forEach((component) => {
       const customTag = Array.from(
@@ -115,21 +140,30 @@ export class BasicComponent {
           source: element,
           context: this,
         });
-        element.parentNode.replaceChild(newComponent.render(), element);
+        /**@type {BasicComponent} */
+        const newElement = newComponent.render();
+
+        // element.parentNode.replaceChild(newElement, element);
+
+        element.replaceWith(newElement);
+        tree.setUpdateEvent(
+          this.nodeTree,
+          element,
+          newComponent.id,
+          newElement,
+        );
+
+        newComponent.triggerUpdate();
       });
     });
 
     this.template.setAttribute(this.id, '');
-    this.template.setAttribute('component', '');
+    this.template.setAttribute('component', this.id);
 
-    const tree = ComponentTree.getInstance();
-    tree.registerComponent(this);
+    if (this.constructor.name === 'Home') {
+      console.log(this.nodeTree);
+    }
 
-    // if (this.constructor.name === 'Home') {
-    this.nodeTree = tree.buildTreeFromNode(this.template, this, this.id);
-    console.log(this.nodeTree);
-    tree.reconciliationAll(this.nodeTree);
-    // }
     return this.template;
   }
 
@@ -137,7 +171,6 @@ export class BasicComponent {
    * Atualiza manualmente o componente.
    */
   reBuild() {
-    console.log('REDERIZEI');
     const root = this.template.parentNode;
     const newComponent = new this.constructor({
       source: root,
@@ -156,7 +189,11 @@ export class BasicComponent {
    * @param {any} value Novo valor do estado
    */
   async setState(propName, value) {
-    this[propName] = value;
-    ComponentTree.getInstance().diff(this.nodeTree, this);
+    if (this[propName] instanceof Function) {
+      this[propName](value);
+    } else {
+      this[propName] = value;
+      ComponentTree.getInstance().diff(this.nodeTree, this);
+    }
   }
 }

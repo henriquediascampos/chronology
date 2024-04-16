@@ -1,0 +1,31 @@
+<div class="toolbar container row items-center between">
+  <img class="logo" src="../../assets/teste.png" alt="" />
+
+  <div
+    class="container row center items-center collapsible-container"
+    bgcolor="transparent"
+  >
+    <div>
+      <btn startIcon="home" color="primary" onclick="home()">home</btn>
+    </div>
+    <div>
+      <btn color="secondary" startIcon="quiz" onclick="login()">Faq</btn>
+    </div>
+
+    <div>
+      <AutoComplete
+        id="filterHistorys"
+        class="patos"
+        color="#fff"
+        label="AutoComplete"
+        placeholder="Busque por uma história"
+        search="search"
+        option-label="optionLabel"
+        filter="filterHistorys"
+      ></AutoComplete>
+    </div>
+  </div>
+  <btn-icon color="primary" id="teste" onclick="toggleMinimazeToolbar()"
+    >{iconTeste}</btn-icon
+  >
+</div>

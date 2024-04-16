@@ -1,5 +1,4 @@
 import { AbstractTheme } from './AbstractTheme';
-import { ComponentTree } from './ComponentTree';
 import { appendChild } from './component-factory';
 
 /**

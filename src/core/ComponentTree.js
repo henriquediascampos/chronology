@@ -6,14 +6,6 @@ export class ComponentTree {
    */
   static instance = null;
 
-  /**
-   * @type {Object.<string, ComponentItem>} Mapeamento de IDs de componentes para instâncias de BasicComponent
-   */
-  componentMap = (this.componentMap = {
-    start: 'root',
-    childrens: {},
-  });
-
   constructor() {
     if (!ComponentTree.instance) {
       ComponentTree.instance = this;
@@ -33,33 +25,6 @@ export class ComponentTree {
   }
 
   /**
-   * Registra um componente na árvore de componentes.
-   * @param {BasicComponent} component Instância do componente a ser registrado
-   */
-  registerComponent(component) {
-    const id = component.id;
-    const idParent = component.context?.id;
-    const parent = this.findParentComponent(idParent);
-    const exists = parent?.childrens[id];
-
-    if (exists) {
-      parent.childrens[id] = Object.assign(component, exists);
-    } else if (parent) {
-      parent.childrens[id] = {
-        id,
-        component,
-        idParent,
-        childrens: {},
-      };
-    } else {
-      this.componentMap.childrens[id] = {
-        component,
-        childrens: {},
-      };
-    }
-  }
-
-  /**
    *
    * @param {Component} component
    * @param {ChildNode} node
@@ -73,12 +38,10 @@ export class ComponentTree {
           props[attribute.nodeName] = {
             literalValue,
             value: component[literalValue],
-            diff: false,
           };
         } else {
           props[attribute.nodeName] = {
             value: attribute.nodeValue,
-            diff: false,
           };
         }
         return props;
@@ -86,10 +49,30 @@ export class ComponentTree {
       {},
     );
 
+    // Include textContent as a prop if present
+    if (
+      node.textContent.trim() !== '' &&
+      /(.*)(\{.+\})(.*)$/.test(node.textContent)
+    ) {
+      const integrateValue = node.textContent.replace(
+        /(.*)(\{.+\})(.*)$/,
+        '$2',
+      );
+      const literalValue = integrateValue.replace(/"|\{|\}/g, '');
+
+      props['textContent'] = {
+        textContent: node.textContent,
+        integrateValue,
+        literalValue,
+        value: component[literalValue],
+      };
+    }
+
     const children = Array.from(node?.children || []).map((n) =>
       this.buildTreeFromNode(n, component),
     );
 
+    /** @property {Tree} */
     const newTree = {
       type: node?.tagName.toLowerCase(),
       element: node,
@@ -97,8 +80,11 @@ export class ComponentTree {
       children,
     };
 
-    if (componentName) {
-      newTree.componentName = componentName;
+    const ref = component.componentsRef?.find(
+      (c) => c.ref.toLowerCase() === node?.tagName.toLowerCase(),
+    );
+    if (componentName || ref) {
+      newTree.componentName = componentName || ref.type?.name;
     }
 
     return newTree;
@@ -108,15 +94,28 @@ export class ComponentTree {
    * @param {Tree} tree
    * @param {BasicComponent} component
    */
-
   diff(tree, component) {
     for (const prop in tree.props) {
       const property = tree.props[prop];
+
       if (property.literalValue) {
         const componentePropvalue = component[property.literalValue];
+
         if (property.value !== componentePropvalue) {
           property.value = componentePropvalue;
-          this.reconciliation(prop, tree);
+          if (tree.updateEvent) {
+            const event = new CustomEvent(tree.updateEvent, {
+              detail: {
+                stateName: prop,
+                stateValue: componentePropvalue,
+                literalValue: property.literalValue,
+              },
+            });
+
+            tree.elementRender?.dispatchEvent(event);
+          } else {
+            this.reconciliation(prop, tree);
+          }
         }
       }
     }
@@ -144,59 +143,29 @@ export class ComponentTree {
    * @param {Tree} value
    */
   reconciliation(prop, tree) {
-    if (tree.element?.hasAttribute(prop)) {
+    if (prop === 'textContent') {
+      tree.element.textContent = tree.props[prop].value;
+    } else if (tree.element?.hasAttribute(prop)) {
       tree.element.setAttribute(prop, tree.props[prop].value);
     }
   }
 
   /**
-   * Encontra o componente pai do componente atual na árvore de componentes.
-   * @param {string} __id Instância do componente cujo pai será procurado
-   * @returns {ComponentItem|null} Instância do componente pai, ou null se não for encontrado
-   */
-  findParentComponent(__id) {
-    if (__id) {
-      return this.find(this.componentMap, __id);
-    }
-
-    return null;
-  }
-
-  /**
    *
-   * @param {ComponentItem} obj
-   * @param {string} __id
-   * @returns {ComponentItem}
+   * @param {Tree} tree
+   * @param {Element} customElement
+   * @param {string} eventName
+   * @param {HTMLElement} elementRender
    */
-  find(obj, __id) {
-    for (const id of Object.keys(obj.childrens)) {
-      const parentCandidate = obj.childrens[id];
-
-      if (id === __id) {
-        return parentCandidate;
-      } else {
-        const children = this.find(parentCandidate, __id);
-        if (children) {
-          return children;
-        }
-      }
+  setUpdateEvent(tree, customElement, eventName, elementRender) {
+    if (tree.element === customElement) {
+      tree.updateEvent = eventName;
+      tree.elementRender = elementRender;
+      return;
     }
-  }
 
-  /**
-   * Obtém um componente da árvore de componentes pelo seu ID.
-   * @param {string} id ID do componente a ser obtido
-   * @returns {ComponentItem} Instância do componente correspondente ao ID fornecido
-   */
-  getComponentById(id) {
-    return this.find(this.componentMap, id);
-  }
-
-  notifyStateChange(component, propName) {
-    const teste = this.getComponentById(component.id);
-    teste.component.update();
-
-    // Verifica se há componentes afetados por essa alteração de estado
-    // e reage a essa alteração conforme necessário
+    for (const child of tree.children) {
+      this.setUpdateEvent(child, customElement, eventName, elementRender);
+    }
   }
 }
