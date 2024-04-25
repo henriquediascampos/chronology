@@ -9,6 +9,7 @@ const InputProps = Object.freeze({
   START_ADORNMENT: 'start-adornment',
   END_ADORNMENT_ACTION: 'end-adornment-action',
   START_ADORNMENT_ACTION: 'start-adornment-action',
+  SET_VALUE: 'setValue',
 });
 
 const InputPropsDefault = Object.freeze({
@@ -53,7 +54,15 @@ export class Input extends Component {
   /**
    * @type {string}
    */
-  value = '';
+  valueInput = '';
+
+  /**
+   * @type {Function}
+   */
+  value = (v) => {
+    this.setState('valueInput', v);
+    this.checkfieldEmpty();
+  };
 
   /**
    * @type {HTMLLegendElement}
@@ -74,6 +83,11 @@ export class Input extends Component {
    * @type {HTMDivElement}
    */
   #formField;
+
+  /**
+   * @type {Function}
+   */
+  #setValue;
 
   /**
    * @param {Prop} props
@@ -97,7 +111,10 @@ export class Input extends Component {
     if (!variant) {
       this.template.setAttribute('variant', 'outlined');
     }
-
+    if (this.source.hasAttribute(InputProps.SET_VALUE)) {
+      const prop = this.source.getAttribute(InputProps.SET_VALUE);
+      this.#setValue = this.context[prop];
+    }
     this.inputFormField();
 
     this.disableForm();
@@ -212,9 +229,14 @@ export class Input extends Component {
       this.#formField.style.setProperty('--text-input', color);
     }
 
-    this.checkfieldEmpty(this.#input.value);
+    this.checkfieldEmpty();
     this.#input.addEventListener('input', (event) => {
-      this.checkfieldEmpty(event.currentTarget.value);
+      const value = event.currentTarget.value;
+      if (this.#setValue) {
+        this.#setValue && this.#setValue.bind(this.context)(value);
+      } else {
+        this.value('value', value);
+      }
     });
 
     this.#input.addEventListener('blur', (event) => {
@@ -223,7 +245,6 @@ export class Input extends Component {
           this.validateForm();
         }, 100);
       }
-      this.checkfieldEmpty(event.currentTarget.value);
     });
 
     // inputElement.addEventListener('focus', (event) => {
@@ -232,8 +253,8 @@ export class Input extends Component {
     // });
   }
 
-  checkfieldEmpty(value) {
-    if (value) {
+  checkfieldEmpty() {
+    if (this.valueInput) {
       this.#formField.classList.add(styles['not-empty']);
     } else {
       this.#formField.classList.remove(styles['not-empty']);

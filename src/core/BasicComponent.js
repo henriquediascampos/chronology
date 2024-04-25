@@ -62,22 +62,6 @@ export class BasicComponent {
     const prefix = this.constructor.name.toLowerCase();
     this.id =
       prop?.id || `${prefix}_${Math.random().toString(36).substring(2, 9)}`;
-
-    this.template.addEventListener('meuEvento', (e) => {
-      console.log('event', e);
-    });
-  }
-
-  /**
-   *
-   * @param {Event} event
-   */
-  triggerUpdate() {
-    this.template.addEventListener(this.id, (e) => {
-      const { stateName, stateValue, literalValue } = e.detail;
-      console.log('event', stateName, stateValue, literalValue);
-      this.setState(stateName, stateValue);
-    });
   }
 
   stylesApply() {
@@ -160,9 +144,9 @@ export class BasicComponent {
     this.template.setAttribute(this.id, '');
     this.template.setAttribute('component', this.id);
 
-    if (this.constructor.name === 'Home') {
-      console.log(this.nodeTree);
-    }
+    // if (this.constructor.name === 'Home') {
+    //   console.log(this.nodeTree);
+    // }
 
     return this.template;
   }
@@ -191,9 +175,21 @@ export class BasicComponent {
   async setState(propName, value) {
     if (this[propName] instanceof Function) {
       this[propName](value);
+      ComponentTree.getInstance().diff(this.nodeTree, this);
     } else {
       this[propName] = value;
       ComponentTree.getInstance().diff(this.nodeTree, this);
     }
+  }
+
+  /**
+   *
+   * @param {Event} event
+   */
+  triggerUpdate() {
+    this.template.addEventListener(this.id, (e) => {
+      const { stateName, stateValue, literalValue } = e.detail;
+      this.setState(stateName, stateValue);
+    });
   }
 }

@@ -40,6 +40,17 @@ export class RippleFocus extends BasicComponent {
     targetRipple.addEventListener('focusout', () => {
       this.removeRippleElementExists(targetRipple);
     });
+
+    targetRipple.addEventListener('mouseleave', (e) => {
+      console.log(e.target);
+      if (e.buttons > 0) {
+        this.removeRippleElementExists(targetRipple);
+      }
+    });
+
+    targetRipple.addEventListener('mouseup', () => {
+      this.removeRippleElementExists(targetRipple);
+    });
   }
 
   /**

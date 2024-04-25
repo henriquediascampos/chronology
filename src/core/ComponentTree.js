@@ -138,6 +138,15 @@ export class ComponentTree {
     }
   }
 
+  #specialCases = [
+    'value',
+    'checked',
+    'disabled',
+    'multiple',
+    'readOnly',
+    'selected',
+  ];
+
   /**
    * @param {string} prop
    * @param {Tree} value
@@ -148,6 +157,9 @@ export class ComponentTree {
         tree.props[prop].integrateValue,
         tree.props[prop].value,
       );
+    } else if (this.#specialCases.includes(prop)) {
+      tree.element[prop] = tree.props[prop].value;
+      tree.element.setAttribute(prop, tree.props[prop].value);
     } else if (tree.element?.hasAttribute(prop)) {
       tree.element.setAttribute(prop, tree.props[prop].value);
     }

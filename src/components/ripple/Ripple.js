@@ -46,8 +46,9 @@ export class Ripple extends BasicComponent {
     });
 
     targetRipple.addEventListener('mouseleave', (e) => {
+      console.log(e.target);
       if (e.buttons > 0) {
-        this.removeRippleElementExists();
+        this.autoRemove();
       }
     });
 
@@ -64,7 +65,7 @@ export class Ripple extends BasicComponent {
         rippleElement.classList.add(this.styles['ripple-element-off']);
       }, 150);
       setTimeout(() => {
-        this.removeRippleElementExists();
+        this.removeRippleElementExists(id);
       }, 896);
     }
   }
@@ -83,8 +84,7 @@ export class Ripple extends BasicComponent {
     }, 50);
   }
 
-  removeRippleElementExists() {
-    const id = this.ids.shift();
+  removeRippleElementExists(id) {
     const rippleExists = document.querySelector(`#${id}`);
     if (rippleExists && id) {
       rippleExists.remove();
